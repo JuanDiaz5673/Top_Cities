@@ -1,14 +1,12 @@
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import textwrap
 
 
 ## EDIT THE TEXT AND THE FONT OF SECTIONS ##
-City = "Punta Cana"
+City = "Democratic Republic of the Congo"
 City_fontName = 'Plumpfull.ttf'
 
-Country = "Dominican Republic"
+Country = "Colombia"
 Country_fontName = 'Plumpfull.ttf'
 
 S1 = "I'M NELSON NIGEL & THIS IS MY KIDMOTO JOURNEY"
@@ -32,60 +30,76 @@ draw = ImageDraw.Draw(img)
 
 
 ## S1 TEXT ##
-S1_font = ImageFont.truetype(S1_fontName, 70)
+S1_font = ImageFont.truetype(S1_fontName, int(height*0.023))
 text = S1
 text_width, text_height = draw.textsize(text, font=S1_font)
 x = (width - text_width) / 2
-y = 110
+y = int(height*0.027)
 draw.text((x, y), text, font = S1_font, fill = (0, 0, 0))
 
+## City Text ##
 
-## CITY TEXT ##
-city_font = ImageFont.truetype(City_fontName, 400)
+city_font_size_max = 400
+city_font_size_min = 250
+city_fontName = 'Plumpfull.ttf'
+
+# Calculate font size based on string length
+city_font_size = max(min(city_font_size_max, int(city_font_size_max * 10 / len(City))), city_font_size_min)
+
+city_font = ImageFont.truetype(city_fontName, city_font_size)
 text = City
 text_width, text_height = draw.textsize(text, font=city_font)
-x = (width - text_width) / 2
-y = 1100
-draw.text((x, y), text, font = city_font, fill = (0, 0, 0))
+max_width = int(width*0.9)  # maximum width for the text
+if text_width > max_width:
+    lines = textwrap.wrap(text, width=int(max_width/text_width*len(text)))
+else:
+    lines = [text]
+y = int(height*0.25) - (text_height*(len(lines)-1))/2  # center the text vertically with equal spacing
+for line in lines:
+    text_width, text_height = draw.textsize(line, font=city_font)
+    x = (width - text_width) / 2
+    draw.text((x, y), line, font=city_font, fill=(0, 0, 0))
+    y += text_height
 
 
 ## COUNTRY TEXT ##
-country_font = ImageFont.truetype(Country_fontName, 200)
+country_font_size = int(city_font_size * 0.8)
+country_font = ImageFont.truetype(Country_fontName, country_font_size)
 text = Country
 text_width, text_height = draw.textsize(text, font=country_font)
-x_country = (width - text_width) / 2 + 30
-y = 1500
-draw.text((x_country, y), text, font = country_font, fill = (0, 0, 0))
+x_country = (width - text_width) / 2 + int(width*0.016)
+y_country = int(height*0.366) + int(city_font_size * 1.2)  # adjust the y-coordinate based on the size of City Text letters
+draw.text((x_country, y_country), text, font = country_font, fill = (0, 0, 0))
 
 
 ## S3 TEXT ##
-S3_font = ImageFont.truetype(S3_fontName, 70)
+S3_font = ImageFont.truetype(S3_fontName, int(height*0.023))
 lines = textwrap.wrap(S3, width=30)
 text_width, line_heights = [], []
-spacing = 20
+spacing = int(height*0.005)
 for line in lines:
     line_width, line_height = draw.textsize(line, font=S3_font)
     text_width.append(line_width)
     line_heights.append(line_height)
 text_height = sum(line_heights) + spacing * (len(lines) - 1)
 x = (width - max(text_width)) / 2
-y = 2000 - text_height / 2
+y = int(height*0.82) - (len(lines)-1)*max(line_heights) / 2 # center the text vertically
+for i, line in enumerate(lines):
+    line_width, line_height = draw.textsize(line, font=S3_font)
+    x = (width - line_width) / 2  # center the line horizontally
+    draw.text((x, y), line, font=S3_font, fill=(0, 0, 0))
+    y += line_heights[i] + spacing
 
-for line, line_height in zip(lines, line_heights):
-    line_width, _ = draw.textsize(line, font=S3_font)
-    draw.text(((width - line_width) / 2, y), line, font=S3_font, fill=(0, 0, 0))
-    y += line_height + spacing
-
-
-## S4 TEXT ##
-S4_font = ImageFont.truetype(S4_fontName, 70)
+    
+## S4 TEXT
+S4_font = ImageFont.truetype(S4_fontName, int(height * 0.023))
 text = S4
 text_width, text_height = draw.textsize(text, font=S4_font)
 x = (width - text_width) / 2
-y = 4000
-draw.text((x, y), text, font = S4_font, fill = (0, 0, 0))
+y = int(height * 0.92)
+draw.text((x, y), text, font=S4_font, fill=(0, 0, 0))
 
-
+## SAVE THE IMAGE
 
 img.show()
 img.save(City+'.jpg')
