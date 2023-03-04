@@ -46,6 +46,7 @@ for i in range(len(column_City)):
     ## OPEN THE BACKGROUND IMAGE, GET THE SIZE OF THE IMAGE ##
     img = Image.open(backGroundimg)
     width, height = img.size
+    print(width, height)
     draw = ImageDraw.Draw(img)
 
 
@@ -83,13 +84,25 @@ for i in range(len(column_City)):
 
 
     ## COUNTRY TEXT ##
-    country_font_size = int(city_font_size * 0.8)
-    country_font = ImageFont.truetype(Country_fontName, country_font_size)
+    country_font_size_max = int(city_font_size_max * 0.8)
+    country_font_size_min = int(city_font_size_min * 0.73)
+    country_fontName = fontName
+
+    # Calculate font size based on string length
+    country_font_size = max(min(country_font_size_max, int(country_font_size_max * 10 / len(Country))), country_font_size_min)
+
+    country_font = ImageFont.truetype(country_fontName, country_font_size)
     text = Country
     text_width, text_height = draw.textsize(text, font=country_font)
-    x_country = (width - text_width) / 2 + int(width*0.016)
-    y_country = int(height*0.366) + int(city_font_size * 1.2)  # adjust the y-coordinate based on the size of City Text letters
-    draw.text((x_country, y_country), text, font = country_font, fill = (255, 255, 255))
+    max_width = int(width*0.008) # change from 0.3 to 0.8
+    wrapper = textwrap.TextWrapper(width=max_width) # specify max_width
+    wrapped_text = wrapper.wrap(text)
+    y_country = int(height*0.32) + int(city_font_size * 1.2)
+    for line in wrapped_text:
+        line_width, line_height = draw.textsize(line, font=country_font)
+        x_country = (width - line_width) / 2
+        draw.text((x_country, y_country), line, font=country_font, fill=(255, 255, 255))
+        y_country += line_height
 
 
     ## S3 TEXT ##
@@ -123,7 +136,4 @@ for i in range(len(column_City)):
 
     #img.show()
     img.save('Images/'+City+'.jpg')
-        
-
-
-
+    
