@@ -10,10 +10,6 @@ try:
 except UnicodeDecodeError:
     print("Error: Could not read the file")
 
-fontName = 'Fonts/Plumpfull.ttf'
-
-
-## EDIT THE TEXT AND THE FONT OF SECTIONS ##
 
 column_City = df['City'].tolist()
 column_Country = df['Country'].tolist()
@@ -21,6 +17,10 @@ column_Country = df['Country'].tolist()
 # Loop over the values in the column_Values variable
 for i in range(len(column_City)):
     
+    ## EDIT THE TEXT AND THE FONT OF SECTIONS ##
+
+    fontName = 'Fonts/Plumpfull.ttf'
+
     city = column_Country[i] 
     City = city
     City_fontName = fontName
